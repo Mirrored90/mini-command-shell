@@ -1,0 +1,420 @@
+Please start shell by running:
+       ./ffosh
+You will see ffosh: CURRENT WORKING DIRECTORY $.
+The same prompting will show every time as user input something, unless user input EOF
+signal (Ctrl-D) or exit to quit  my shell.
+Following testcases are run after this command.
+
+(1)
+  Input:	empty (i.e. dicrectly hit enter)
+  Output:	No input cmd!
+  Explanation:	Shell should act only when user give some input
+
+(2)
+  Input:	ls
+  Output:	[List all directory contents]
+  		Program was successful
+  Explanation:	"ls" is a relative path. It is found in /bin/ls and executed by my
+  		shell.
+
+(3)
+  Input:	ls -l
+  Output:	[List all directory contents with the author of each file]
+  		Program was successful
+  Explanation:	My shell accepts multipul valid arguments. "ls" functions normally with
+  		a specified argument (i.e. "-l") as explained in (2).
+
+(4)
+  Input:	ls -y
+  Output:	/bin/ls: invalid option -- 'y'
+  		Try '/bin/ls --help' for more information.
+		Program failed with code 2
+  Explanation:	The argument "-y" can not work with ls. So the program failed and gave
+  		out exact exit code, which is 2 in this case.
+
+(5)
+  Input:	/bin/ls	
+  Output:	[Same output as (2)]
+  Explanation:	/bin/ls is a absolute path. It is executed directly by my shell.
+
+(6)
+  Input:	./hello
+  Output:	Hello!
+  		Program was successful
+  Explanation:	"hello" is a executable file. It is executed directly by my shell.
+
+(7)
+  Input:	./README
+  Output:	Execve Failed: Permission denied
+  		Program failed with code 1
+  Explanation:	The path ./README can be found. However it is nonexecutable. So execve
+  		failed and program exit with exact exit code, which is 1 in this case.
+
+(8)
+  Input:	./seg
+  Output:	Terminated by signal 11
+  Explanation:	"seg" is a program which causes segmentation fault. So the program was
+  		terminated by signal 11 (i.e. SIGSEGV).
+
+(9)
+  Input:	xxx
+  Output:	Command xxx not found
+  Explanation:	My shell can not found "xxx" in all possible path. So it prompt a
+  		message indicating such command dose not exist.
+
+(10)
+  Input:	.
+  Output:	Command . not found
+  Explanation:	Though . is found by my shell as a directory, however is can not be
+  		excecute.
+
+(11)
+  Input:	echo a     b c
+  Output:	a b c
+  		Program was successful
+  Explanation:	The arguments are parsed by space. My shell can jump consecutive
+  		spaces.
+
+(12)
+  Input:	echo "ab   cd"
+  Output:	ab   cd
+  		Program was successful
+  Explanation:	The arguments are parsed by quotation marks. The space inclosed by
+  		two quotation marks will not be jumped.
+
+(14)
+  Input:	echo "a b c 	
+  Output:	Unclosed quotation mark!
+  Explanation:	Two quotation marks have to paired together
+
+(13)
+  Input:	echo \"a b c
+  Output:	"a b c
+  		Progam was successful
+  Explanation:	Backslash works as the escape sequencd mark. In my shell it can only
+  		be used to escape quatation marks and another backslash.
+
+(14)
+  Input:	echo \a b c
+  Output:	\a b c
+  		Program was successful
+  Explanation:	The "a" will not be escaped as explained in (13).
+
+(15)
+  Input:	echo \\ a b \"	
+  Output:	\ a b "
+  		Program was successful
+  Explanation:	Both backslash and quotation mark were escaped.
+
+(16)
+  Input:	echo \
+  Output:	\
+  		Program was successful
+  Explanation:	A backslash followed by nothing will cause no escaption.
+
+(17)
+  Input:	echo "a"b"c"
+  Output:	a b c
+  		Program was successful
+  Explanation:	My shell parses quatation mark as soon as they are paired.
+
+(18)
+  Input:	echo "\"hello world\""   "a\\b\\c d\\"
+  Output:	"hello world" a\b\c d\
+  		Program was successful
+  Explanation:	It is a mixed test. Everyting works fine as they are mixed together.
+
+(19)
+  Input:	cd ..
+  Output:	[The CURRENT WORKING DIRECTORY will change to upper level directory]
+  Explanation:	cd will change the path to the input argument.
+
+(20)
+  Input:	cd .. xxx
+  Output:	Arguments number is wrong!
+  Explanation:	The "cd" command can only accept one argument. The working directory
+  		will not change.
+
+(21)
+  Input:	cd /root
+  Output:	chdir failed: Permission denied
+  Explanation:	Certain paths are reserved for access. The working directory will not
+  		change.
+
+(22)
+  Input:	cd xxx
+  Output:	chdir failed: No such file or directory
+  Explanation:	If path dose not exist, "cd" will not be excecuted.
+
+(23)
+  Input:	set apple red
+  		echo $apple
+  Output:	red
+  		Program was successful
+  Explanation:	set will set the value of "apple" (i.e. key) to "red" (i.e. value). "$"
+  		indicates to replace the key with the value.
+
+(24)
+  Input:	set apple red
+  		echo $bigapple
+  Output:	$bigapple
+  		Program was successful
+  Explanation:	As "bigapple" is not a key, "echo" will print itself.
+
+(25)
+  Input:	set apple red
+  		echo $appleisgood
+  Output:	redisgood
+  		Program was successful
+  Explanation:	The shell only replace "apple" with "red" and rest of argument will not
+  		change.
+
+(26)
+  Input:	set app 00
+  		set apple red
+		echo $apple
+  Output:	red
+                Program was successful
+  Explanation:	It will not print out "00le" as my shell will serch for the entire key.
+
+(27)
+  Input:	set apple is red
+  Output:	Wrong number of input for kv pairs!
+  Explanation:	My shell only accepts one value for one key.
+
+(28)
+  Input:	set apple red
+  		set apple green
+		echo $apple
+  Output:	green
+  		Program was successful
+  Explanation:	If same key is set twice, the value will be updated.
+
+(29)
+  Input:	set \apple red
+  Output:	Key: \aaple is invalid!
+  Explanation:	The key is valid if it only contains letters, numbers and underscore.
+
+(31)
+  Input:	set _apple0 red
+  		echo $_apple0
+  Output:	red
+                Program was successful
+  Explanation:	Same as (29)
+
+(30)
+  Input:	set x $
+    		echo $x
+  Output:	$
+  		Program was successful
+  Explanation:	"x" is set to "$".
+
+(31)
+  Input:	set apple red
+  		echo $$apple
+  Output:	$red
+  		Program was successful
+  Explanation:	The first "$" will be printed out directly. The second "$" will be used
+  		to replace the key with the value.
+
+(32)
+  Input:	set apple red
+  		rev apple
+		echo $apple
+  Output:	der
+  		Program was successful
+  Explanation:	"rev" will reverse the value of the key.
+
+(33)
+  Input:	set apple red
+  		set pig pink
+                rev apple pig
+		echo $apple $pig
+  Output:	der knip
+  		Program was successful
+  Explanation:	Same as (32). My shell can rev multiply keys.
+
+(34)
+  Input:	rev xxx
+  Output:	Key [xxx] does not exist!
+  Explanation:	If key "xxx" dose not exist, so we can not run "rev".
+
+(35)
+  Input:	set x 123
+  		env
+  Output:	[A list of current envrionment variables, but x is not in there]
+  Explanation:	"set" will not change the envrionment varaiables.
+
+(36)
+  Input:	set
+  Output:	Not enough argument!
+  Explanation:	"set" takes at least one argument.
+
+(37)
+  Input:	export
+  Output:	Not enough argument!
+  Explanation:	"export" takes at least one argument.
+
+(38)
+  Input:	rev
+  Output:	Not enough argument!
+  Explanation:	"rev" takes at least one argument.
+
+(39)
+  Input:	export xxx
+  Output:	Key [xxx] does not exist!
+  Explanation:	If key "xxx" dose not exist, so we can not run "export".
+
+(40)
+  Input:	set x 123
+  		export x
+		env
+  Output:	[A list of current envrionment variables, and "x=123" is included]
+  Explanation:	"export" will export variable to envrionment variables.
+
+(41)
+  Input:	set x 123
+  		set y 456
+		export x y
+		env
+  Output:	[A list of current envrionment variables, and both "x=123" and
+  		"y=456" are included]
+  Explanation:	Same as (40). My shell support multiply keys to be exported at once.
+
+(42)
+  Input:	set x 123
+  		rev x
+		export x
+		env
+  Output:	[A list of current envrionment variables, and "x=321" is included]
+  Explanation:	It is a mixed test. Everyting works fine as they are mixed together
+
+(43)
+  Input:	echo $PATH	
+  Output:	/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+  		:/usr/local/games
+		Program was successful
+  Explanation:	"echo" prints out the value for envrionmental variable "PATH".
+
+(44)
+  Input:	set PATH xxx
+  		echo $PATH
+  Output:	xxx
+  		Program was successful
+  Explanation:	Change the value of "PAHT" has no influence to excecution, as "echo"
+  		still functions normally. The value of "PATH" is set to xxx by "set".
+
+(45)
+  Input:        echo $ECE551PATH
+  Output:       /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+                :/usr/local/games
+  Explanation:	"echo" prints out the value for envrionmental variable "ECE551PATH".
+
+(46)
+  Input:	set ECE551PATH xxx
+  		echo $ECE551PATH
+  Output:	Command echo not found
+  Explanation:	My shell store all possible path in "ECE551PATH" and serch command in 
+  		it. As "ECE551PATH" changed to "xxx", we can no longer found any
+		command.
+
+(47)
+  Input:	cat < README
+  Output:	[All contents of README]
+  		Program was successful
+  Explanation:	The stdin was redirected to README. So "cat" performs on README.
+
+(48)
+  Input:	./myparse < README
+  Output:	display my token:
+  		Your
+		final
+		programming
+		assignment
+		is
+		the
+		mini-project.
+		Program was successful
+  Explanation:	"./myparse" itself will ask user to enter input, parse them and cout
+  		to shell. As stdin was redircted, it will take "README" as input and
+		output to shell.
+		
+(49)
+  Input:	cat < 
+  Output:	/bin/cat: '<': No such file or directory
+  		Program failed with code 1
+  Explanation:	One argument must followd by "<". 
+
+(50)
+  Input:	ls > out
+  		cat out
+  Output:	[List all directory contents]
+  Explanation:	The stdout is redircted to "out".
+
+(51)
+  Input:	g++ > out
+  		cat out
+  Output:	g++: fatal error: no input files
+  		compilation terminated.
+	    	Program failed with code 1
+
+		Program was successful
+  Explanation:	The "out" file will be empty as ">" is stdout redirction not stderr
+  		redirction.
+
+(52)
+  Input:	g++ 2> out
+  		cat out
+  Output:	Program failed with code 1
+
+  		g++: fatal error: no input files
+		compilation terminated.
+
+		Program was successful
+  Explanation:	The error message happened in "g++" was redirected and wrote to "out".
+  		So, after "cat" it will show the content of the error message.
+
+(53)
+  Input:	./myparse < README > out
+  		cat out
+  Output:	Program was successful
+
+  		display my token:
+		Your
+		final
+		programming
+		assignment
+		is
+		the
+		mini-project.
+
+		Program was successful
+  Explanation:	In these case, fisrt the stdin of "./myparse" was redircted to "README"
+  		and its stdout was redircted to "out". So the shell outputed no	result
+		but only "Program was successful". After "cat" "out", we can see the
+		output.
+
+(54)
+  Input:	./myparse > out < README
+  Output:	[same as (53)]
+  Explanation:	The order of ">" and "<" dose not matter.
+
+(55)
+  Input:	set x README
+  		./myparse < $x > out
+		cat out
+  Output:	[same as (53)]
+  Explanation:	In this case "$x" was substitute to "README" and every thing works exact
+  		as previous cases.
+
+(56)
+  Input:	./myparse < xxx
+  Output:	xxx does not exist
+  		Program failed with code 1
+  Explanation:	If the redirected input does not exist, stdin redirct will fail.
+
+(57)
+  Input:	set op ls
+  		$op
+  Output:	[same as (2)]
+  Explanation:	The "set" also works for command.
